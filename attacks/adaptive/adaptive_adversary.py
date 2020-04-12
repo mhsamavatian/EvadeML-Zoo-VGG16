@@ -39,6 +39,8 @@ def insert_pre_processing_layer_to_model(model, input_shape, func):
 
 # maybe_generate_adv_examples(sess, model, x, y, X_test, Y_test_target, attack_name, attack_params, use_cache = x_adv_fpath, verbose=FLAGS.verbose, attack_log_fpath=attack_log_fpath)
 def adaptive_attack(sess, model, squeezers, x, y, X_test, Y_test_target, attack_name, attack_params):
+    print ('here in unknown func')
+    exit(0)
     for squeeze_func in squeezers:
         predictions = model(squeeze_func(x))
 
