@@ -7,6 +7,8 @@ from keras.backend.tensorflow_backend import _postprocess_conv2d_output
 
 py_all = all
 
+
+
 def depth_to_space(input, scale, data_format=None):
     ''' Uses phase shift algorithm to convert channels/depth for spatial resolution '''
     if data_format is None:

@@ -75,16 +75,17 @@ def main(argv=None):
             img_size = 299
         else:
             img_size = 224
-        X_test_all, Y_test_all = dataset.get_test_data(img_size, 0, 1000)
+        X_test_all, Y_test_all = dataset.get_test_data(img_size, 0, 10000)
     else:
         X_test_all, Y_test_all = dataset.get_test_dataset()
     print ('done')
+    """
     #print (X_test_all.shape)
     #print (Y_test_all.shape)
-    np.save('X_test_all',X_test_all)
-    np.save('Y_test_all',Y_test_all)
+    #np.save('X_test_all',X_test_all)
+    #np.save('Y_test_all',Y_test_all)
     #exit(0)
-    """
+    
     if FLAGS.dataset_name == 'ImageNet':
         if FLAGS.model_name == 'inceptionv3':
             img_size = 299
@@ -149,9 +150,14 @@ def main(argv=None):
     print ( "Selected %d examples." % len(selected_idx))
     print ( "Selected index in test set (sorted): %s" % selected_example_idx_ranges )
     X_test, Y_test, Y_pred = X_test_all[selected_idx], Y_test_all[selected_idx], Y_pred_all[selected_idx]
+    X_test = np.load('selected_X.npy')
+    Y_test = np.load('selected_Y.npy')
+    Y_pred = np.load('selected_GT.npy')
+    """
     np.save('selected_X',X_test)
     np.save('selected_Y',Y_test)
     np.save('selected_GT',Y_pred)
+    """
     # The accuracy should be 100%.
     accuracy_selected = calculate_accuracy(Y_pred, Y_test)
     mean_conf_selected = calculate_mean_confidence(Y_pred, Y_test)
