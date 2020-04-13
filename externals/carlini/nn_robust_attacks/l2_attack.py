@@ -303,13 +303,13 @@ class CarliniL2_L1:
         self.boxmul = (boxmax - boxmin) / 2.
         self.boxplus = (boxmin + boxmax) / 2.
         self.newimg = tf.tanh(modifier + self.timg) * self.boxmul + self.boxplus
-        main_image = tf.tanh(self.timg) * self.boxmul + self.boxplus
+        #main_image = tf.tanh(self.timg) * self.boxmul + self.boxplus
 
-        base_output = full_model.predict(self.newimg )
-        indexmax = tf.argmax(base_output,axis=1)
+        self.base_output = full_model.predict(self.newimg )
+        indexmax = tf.argmax(self.base_output,axis=1)
         mask = tf.one_hot(indexmax, depth=1000) 
-        base_output = base_output * mask
-        self.conf = tf.reduce_sum(base_output,1,keepdims=True)
+        base_output_conf = self.base_output * mask
+        self.conf = tf.reduce_sum(base_output_conf,1,keepdims=True)
 
         #flat_main_image = tf.reshape(main_image,[batch_size,-1])
         #main_input = tf.concat([flat_main_image,self.conf],axis=1)
@@ -322,7 +322,7 @@ class CarliniL2_L1:
 
         #self.base_output = noisy_model.predict(main_input)
         #self.adv_output = noisy_model.predict(adv_input)
-        self.base_output = noisy_model.predict([main_image,self.conf])
+        #self.base_output = noisy_model.predict([main_image,self.conf])
         self.adv_output = noisy_model.predict([self.newimg,self.conf])
         
         # prediction BEFORE-SOFTMAX of the model
