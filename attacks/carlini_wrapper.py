@@ -123,6 +123,36 @@ def create_noisy_model():
     #del model
     return new_model    
 
+from nn_robust_attacks.l2_attack import CarliniL2_L1_avg
+def generate_carlini_l2_l1_avg_examples(sess, model, x, y, X, Y, attack_params, verbose, attack_log_fpath):
+    noisy_model = create_noisy_model()
+
+    model_wrapper,full_model_wrapper = wrap_to_carlini_model(model, X, Y)
+    model_wrapper_noisy = wrap_to_carlini_model_noisy(noisy_model, X, Y)
+    accepted_params = ['batch_size', 'confidence', 'targeted', 'learning_rate', 'binary_search_steps', 'max_iterations', 'abort_early', 'initial_const']
+    for k in attack_params:
+        if k not in accepted_params:
+            raise NotImplementedError("Unsuporrted params in Carlini L2: %s" % k)
+
+    # assert batch_size <= len(X)
+    if 'batch_size' in attack_params and attack_params['batch_size'] > len(X):
+        attack_params['batch_size'] = len(X)
+
+    if 'binary_search_steps' in attack_params:
+        attack_params['binary_search_steps'] = int(attack_params['binary_search_steps'])
+
+    attack = CarliniL2_L1_avg(sess, model_wrapper,full_model_wrapper,model_wrapper_noisy, **attack_params)
+
+    if not verbose:
+        disablePrint(attack_log_fpath)
+    # The input range is [0, 1], convert to [-0.5, 0.5] by subtracting 0.5.
+    # The return range is [-0.5, 0.5]. Convert back to [0,1] by adding 0.5.
+    X_adv = attack.attack(X - 0.5, Y) + 0.5
+    if not verbose:
+        enablePrint()
+
+    return X_adv
+
 from nn_robust_attacks.l2_attack import CarliniL2_L1
 def generate_carlini_l2_l1_examples(sess, model, x, y, X, Y, attack_params, verbose, attack_log_fpath):
     noisy_model = create_noisy_model()
